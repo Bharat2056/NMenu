@@ -11,53 +11,58 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DatePickerComponent from "../components/restaurant/DatePickerComponent";
 import GuestPickerComponent from "../components/restaurant/GuestPickerComponent";
 import FindSlots from "../components/restaurant/FindSlots";
 
+// Import your local data arrays
+import {
+  restaurants as allRestaurants, // Renamed to avoid conflict with `restaurant` param
+  carouselImages as allCarouselImages,
+  slots as allSlots,
+} from "../../store/restaurants"; // Assuming you'll create this file
+
 export default function Restaurant() {
-  const { restaurant } = useLocalSearchParams();
+  const { restaurant: restaurantName } = useLocalSearchParams(); // Renamed for clarity
   const flatListRef = useRef(null);
   const windowWidth = Dimensions.get("window").width;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [restaurantData, setRestaurantData] = useState({});
   const [carouselData, setCarouselData] = useState({});
-
-  const [slotsData, setSlotsData] = useState({});
+  const [slotsData, setSlotsData] = useState([]); // Initialize as array
 
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [selectedNumber, setSelectedNumber] = useState(2);
   const [date, setDate] = useState(new Date());
 
   const handleNextImage = () => {
-    const carouselLength = carouselData[0]?.images.length;
-    if (currentIndex < carouselLength - 1) {
-      const nextIndex = currentIndex + 1;
-      setCurrentIndex(nextIndex);
-      flatListRef.current.scrollToIndex({ index: nextIndex, animated: true });
-    }
-
-    if (currentIndex == carouselLength - 1) {
-      const nextIndex = 0;
-      setCurrentIndex(nextIndex);
-      flatListRef.current.scrollToIndex({ index: nextIndex, animated: true });
+    const carouselLength = carouselData.images?.length;
+    if (carouselLength > 0) { // Add check for carouselLength
+      if (currentIndex < carouselLength - 1) {
+        const nextIndex = currentIndex + 1;
+        setCurrentIndex(nextIndex);
+        flatListRef.current.scrollToIndex({ index: nextIndex, animated: true });
+      } else {
+        // Loop back to the first image
+        setCurrentIndex(0);
+        flatListRef.current.scrollToIndex({ index: 0, animated: true });
+      }
     }
   };
-  const handlePrevImage = () => {
-    const carouselLength = carouselData[0]?.images.length;
-    if (currentIndex > 0) {
-      const prevIndex = currentIndex - 1;
-      setCurrentIndex(prevIndex);
-      flatListRef.current.scrollToIndex({ index: prevIndex, animated: true });
-    }
 
-    if (currentIndex == 0) {
-      const prevIndex = carouselLength - 1;
-      setCurrentIndex(prevIndex);
-      flatListRef.current.scrollToIndex({ index: prevIndex, animated: true });
+  const handlePrevImage = () => {
+    const carouselLength = carouselData.images?.length;
+    if (carouselLength > 0) { // Add check for carouselLength
+      if (currentIndex > 0) {
+        const prevIndex = currentIndex - 1;
+        setCurrentIndex(prevIndex);
+        flatListRef.current.scrollToIndex({ index: prevIndex, animated: true });
+      } else {
+        // Loop back to the last image
+        setCurrentIndex(carouselLength - 1);
+        flatListRef.current.scrollToIndex({ index: carouselLength - 1, animated: true });
+      }
     }
   };
 
@@ -113,11 +118,11 @@ export default function Restaurant() {
             bottom: 15,
           }}
         >
-          {carouselData[0].images?.map((_, i) => (
+          {carouselData.images?.map((_, i) => ( // Access images directly from carouselData
             <View
               key={i}
               className={`bg-white h-2 w-2 ${
-                i == currentIndex && "h-3 w-3"
+                i == currentIndex ? "h-3 w-3" : "" // Use ternary for cleaner class assignment
               } p-1 mx-1 rounded-full`}
             />
           ))}
@@ -137,69 +142,77 @@ export default function Restaurant() {
     );
   };
 
-  const getRestaurantData = async () => {
+  const getLocalRestaurantData = () => {
     try {
-      const restaurantQuery = query(
-        collection(db, "restaurants"),
-        where("name", "==", restaurant)
+      // Find the matching restaurant data
+      const foundRestaurant = allRestaurants.find(
+        (res) => res.name === restaurantName
       );
-      const restaurantSnapshot = await getDocs(restaurantQuery);
 
-      if (restaurantSnapshot.empty) {
-        console.log("No matching restaurant found");
+      if (!foundRestaurant) {
+        console.log("No matching restaurant found locally for:", restaurantName);
+        setRestaurantData({}); // Clear data if not found
+        setCarouselData({});
+        setSlotsData([]);
         return;
       }
 
-      for (const doc of restaurantSnapshot.docs) {
-        const restaurantData = doc.data();
-        setRestaurantData(restaurantData);
+      setRestaurantData(foundRestaurant);
 
-        const carouselQuery = query(
-          collection(db, "carousel"),
-          where("res_id", "==", doc.ref)
-        );
-        const carouselSnapshot = await getDocs(carouselQuery);
-        const carouselImages = [];
-        if (carouselSnapshot.empty) {
-          console.log("No matching carousel found");
-          return;
-        }
-        carouselSnapshot.forEach((carouselDoc) => {
-          carouselImages.push(carouselDoc.data());
-        });
-        setCarouselData(carouselImages);
+      // Construct a pseudo-ref_id for matching
+      const pseudoRefId = `/restaurants/${foundRestaurant.name.replace(/\s+/g, '_').toLowerCase()}`; // Example: "sea_grill_of_merrick_park"
 
-        const slotsQuery = query(
-          collection(db, "slots"),
-          where("ref_id", "==", doc.ref)
-        );
-        const slotsSnapshot = await getDocs(slotsQuery);
-        const slots = [];
-        if (carouselSnapshot.empty) {
-          console.log("No matching slots found");
-          return;
-        }
-        slotsSnapshot.forEach((slotDoc) => {
-          slots.push(slotDoc.data());
-        });
-        setSlotsData(slots[0]?.slot);
+      // Find matching carousel images
+      const foundCarousel = allCarouselImages.find(
+        (item) => item.res_id.includes(foundRestaurant.name.replace(/\s+/g, '_').toLowerCase()) || item.res_id.includes(pseudoRefId)
+      );
+
+      if (foundCarousel) {
+        setCarouselData(foundCarousel);
+      } else {
+        console.log("No matching carousel images found locally for:", restaurantName);
+        setCarouselData({});
       }
+
+      // Find matching slots data
+      const foundSlots = allSlots.find(
+        (item) => item.ref_id.includes(foundRestaurant.name.replace(/\s+/g, '_').toLowerCase()) || item.ref_id.includes(pseudoRefId)
+      );
+
+      if (foundSlots) {
+        setSlotsData(foundSlots.slot);
+      } else {
+        console.log("No matching slots found locally for:", restaurantName);
+        setSlotsData([]);
+      }
+
     } catch (error) {
-      console.log("Error fetching data", error);
+      console.log("Error fetching local data", error);
     }
   };
+
   const handleLocation = async () => {
-    const url = "https://maps.app.goo.gl/TtSmNr394bVp9J8n8";
-    const supported = await Linking.canOpenURL(url);
-    if (supported) {
-      await Linking.openURL(url);
-    } else {
-      console.log("Don't know how to open URL", url);
+    // You might want to use the actual restaurant address here if available
+    const address = restaurantData?.address || "Unknown Location";
+    const url = Platform.select({
+      ios: `http://maps.apple.com/?q=${encodeURIComponent(address)}`,
+      android: `geo:0,0?q=${encodeURIComponent(address)}`,
+    });
+
+    if (url) {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.log("Don't know how to open URL", url);
+        alert(`Cannot open map for: ${address}`);
+      }
     }
   };
+
   useEffect(() => {
-    getRestaurantData();
-  }, []);
+    getLocalRestaurantData();
+  }, [restaurantName]); // Rerun effect if restaurantName changes
 
   return (
     <SafeAreaView
@@ -212,20 +225,26 @@ export default function Restaurant() {
       <ScrollView className="h-full">
         <View className="flex-1 my-2 p-2">
           <Text className="text-xl text-[#f49b33] mr-2 font-semibold">
-            {restaurant}
+            {restaurantName}
           </Text>
           <View className="border-b border-[#f49b33]" />
         </View>
         <View className="h-64 max-w-[98%] mx-2 rounded-[25px]">
-          <FlatList
-            ref={flatListRef}
-            data={carouselData[0]?.images}
-            renderItem={carouselItem}
-            horizontal
-            scrollEnabled={false}
-            showsHorizontalScrollIndicator={false}
-            style={{ borderRadius: 25 }}
-          />
+          {carouselData.images?.length > 0 ? ( // Only render if images exist
+            <FlatList
+              ref={flatListRef}
+              data={carouselData.images}
+              renderItem={carouselItem}
+              horizontal
+              scrollEnabled={false}
+              showsHorizontalScrollIndicator={false}
+              style={{ borderRadius: 25 }}
+            />
+          ) : (
+            <View className="flex-1 items-center justify-center bg-[#474747] rounded-[25px]">
+              <Text className="text-white text-lg">No images available</Text>
+            </View>
+          )}
         </View>
         <View className="flex-1 flex-row mt-2 p-2">
           <Ionicons name="location-sharp" size={24} color="#f49b33" />
@@ -270,7 +289,7 @@ export default function Restaurant() {
         </View>
         <View className="flex-1">
           <FindSlots
-            restaurant={restaurant}
+            restaurant={restaurantName} // Pass the correct prop name
             date={date}
             selectedNumber={selectedNumber}
             slots={slotsData}

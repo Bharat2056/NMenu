@@ -9,16 +9,18 @@ import {
   ActivityIndicator,
   TouchableOpacity,
 } from "react-native";
-import uploadData from "../../config/bulkupload";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import logo from "../../assets/images/logo.png";
 import banner from "../../assets/images/homeBanner.png";
-import { collection, getDocs, query } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+// Import the local restaurants data
+// import { restaurants as localRestaurantsData } from "../../config/restaurants"; // Assuming restaurants.js is in config folder
+
+import { restaurants as localRestaurantsData } from "../../store/restaurants";
 
 export default function Home() {
   const router = useRouter();
@@ -47,19 +49,21 @@ export default function Home() {
     </TouchableOpacity>
   );
 
-  const getRestaurants = async () => {
-    const q = query(collection(db, "restaurants"));
-    const res = await getDocs(q);
+  // Remove the getRestaurants function as it's no longer needed
+  // const getRestaurants = async () => {
+  //   const q = query(collection(db, "restaurants"));
+  //   const res = await getDocs(q);
 
-    res.forEach((item) => {
-      setRestaurants((prev) => [...prev, item.data()]);
-    });
-  };
+  //   res.forEach((item) => {
+  //     setRestaurants((prev) => [...prev, item.data()]);
+  //   });
+  // };
+
   useEffect(() => {
-    getRestaurants();
+    // Set the restaurants state directly from the imported local data
+    setRestaurants(localRestaurantsData);
     temp();
   }, []);
-
 
   return (
     <SafeAreaView

@@ -1,11 +1,10 @@
 import { View, Text, TouchableOpacity, Modal, TextInput } from "react-native";
 import React, { useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addDoc, collection } from "firebase/firestore";
 import { Formik } from "formik";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { db } from "../../../config/firebaseConfig";
 import validationSchema from "../../../utils/guestFormSchema";
+
 const FindSlots = ({
   date,
   selectedNumber,
@@ -17,6 +16,7 @@ const FindSlots = ({
   const [slotsVisible, setSlotsVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [formVisible, setFormVisible] = useState(false);
+
   const handlePress = () => {
     setSlotsVisible(!slotsVisible);
   };
@@ -24,55 +24,68 @@ const FindSlots = ({
   const handleBooking = async () => {
     const userEmail = await AsyncStorage.getItem("userEmail");
     const guestStatus = await AsyncStorage.getItem("isGuest");
+
+    const booking = {
+      email: userEmail || "guest",
+      slot: selectedSlot,
+      date: date.toISOString(),
+      guests: selectedNumber,
+      restaurant,
+    };
+
     if (userEmail) {
       try {
-        await addDoc(collection(db, "bookings"), {
-          email: userEmail,
-          slot: selectedSlot,
-          date: date.toISOString(),
-          guests: selectedNumber,
-          restaurant: restaurant,
-        });
-
-        alert("Booking successfully Done!");
+        const storedBookings = await AsyncStorage.getItem("bookings");
+        const bookings = storedBookings ? JSON.parse(storedBookings) : [];
+        bookings.push(booking);
+        await AsyncStorage.setItem("bookings", JSON.stringify(bookings));
+        alert("Booking successfully saved locally!");
       } catch (error) {
-        console.log(error);
+        console.log("Error saving booking", error);
       }
     } else if (guestStatus === "true") {
       setFormVisible(true);
       setModalVisible(true);
     }
   };
+
   const handleCloseModal = () => {
     setModalVisible(false);
   };
+
   const handleSlotPress = (slot) => {
-    let prevSlot = selectedSlot;
-    if (prevSlot == slot) {
+    if (selectedSlot === slot) {
       setSelectedSlot(null);
     } else {
       setSelectedSlot(slot);
     }
   };
+
   const handleFormSubmit = async (values) => {
     try {
-      await addDoc(collection(db, "bookings"), {
+      const booking = {
         ...values,
         slot: selectedSlot,
         date: date.toISOString(),
         guests: selectedNumber,
-        restaurant: restaurant,
-      });
+        restaurant,
+      };
 
-      alert("Booking successfully Done!");
+      const storedBookings = await AsyncStorage.getItem("bookings");
+      const bookings = storedBookings ? JSON.parse(storedBookings) : [];
+      bookings.push(booking);
+      await AsyncStorage.setItem("bookings", JSON.stringify(bookings));
+
+      alert("Booking successfully saved locally!");
       setModalVisible(false);
     } catch (error) {
-      console.log(error);
+      console.log("Error saving guest booking", error);
     }
   };
+
   return (
     <View className="flex-1">
-      <View className={`flex ${selectedSlot != null && "flex-row"} `}>
+      <View className={`flex ${selectedSlot != null && "flex-row"}`}>
         <View className={`${selectedSlot != null && "flex-1"}`}>
           <TouchableOpacity onPress={handlePress}>
             <Text className="text-center text-lg font-semibold bg-[#f49b33] p-2 my-3 mx-2 rounded-lg">
@@ -90,24 +103,24 @@ const FindSlots = ({
           </View>
         )}
       </View>
+
       {slotsVisible && (
         <View className="flex-wrap flex-row mx-2 p-2 bg-[#474747] rounded-lg">
           {slots.map((slot, index) => (
             <TouchableOpacity
               key={index}
-              className={` m-2 p-4 bg-[#f49b33] rounded-lg items-center justify-center ${
+              className={`m-2 p-4 bg-[#f49b33] rounded-lg items-center justify-center ${
                 selectedSlot && selectedSlot !== slot ? "opacity-50" : ""
               }`}
               onPress={() => handleSlotPress(slot)}
-              disabled={
-                selectedSlot == slot || selectedSlot == null ? false : true
-              }
+              disabled={selectedSlot && selectedSlot !== slot}
             >
               <Text className="text-white font-bold">{slot}</Text>
             </TouchableOpacity>
           ))}
         </View>
       )}
+
       <Modal
         visible={modalVisible}
         transparent={true}
@@ -145,6 +158,7 @@ const FindSlots = ({
                         onPress={handleCloseModal}
                       />
                     </View>
+
                     <Text className="text-[#f49b33] mt-4 mb-2">Name</Text>
                     <TextInput
                       className="h-10 border border-white text-white rounded px-2"
@@ -152,12 +166,12 @@ const FindSlots = ({
                       value={values.fullName}
                       onBlur={handleBlur("fullName")}
                     />
-
                     {touched.fullName && errors.fullName && (
                       <Text className="text-red-500 text-xs mb-2">
                         {errors.fullName}
                       </Text>
                     )}
+
                     <Text className="text-[#f49b33] mt-4 mb-2">
                       Phone Number
                     </Text>
@@ -166,8 +180,8 @@ const FindSlots = ({
                       onChangeText={handleChange("phoneNumber")}
                       value={values.phoneNumber}
                       onBlur={handleBlur("phoneNumber")}
+                      keyboardType="phone-pad"
                     />
-
                     {touched.phoneNumber && errors.phoneNumber && (
                       <Text className="text-red-500 text-xs mb-2">
                         {errors.phoneNumber}
@@ -176,7 +190,7 @@ const FindSlots = ({
 
                     <TouchableOpacity
                       onPress={handleSubmit}
-                      className="p-2 my-2 bg-[#f49b33]  text-black rounded-lg mt-10"
+                      className="p-2 my-2 bg-[#f49b33] text-black rounded-lg mt-10"
                     >
                       <Text className="text-lg font-semibold text-center">
                         Submit

@@ -1,3 +1,9 @@
+
+// Consolidate your local data into a single file, e.g., 'store/restaurantData.js'
+// This makes imports cleaner and manages your local data better.
+// The content of this file would be the `restaurants`, `carouselImages`, and `slots` arrays you provided.
+
+// --- store/restaurantData.js ---
 const restaurants = [
   {
     name: "Sea Grill of Merrick Park",
@@ -118,7 +124,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/1581384/pexels-photo-1581384.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/2253643/pexels-photo-2253643.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_1",
+    res_id: "/restaurants/sea_grill_of_merrick_park",
   },
   {
     images: [
@@ -129,7 +135,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/1449773/pexels-photo-1449773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/1581554/pexels-photo-1581554.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_2",
+    res_id: "/restaurants/ocean's_edge_bistro",
   },
   {
     images: [
@@ -140,7 +146,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/3656787/pexels-photo-3656787.jpeg?auto=compress&cs=tinysrgb&h=138.125&fit=crop&w=154.375&dpr=1",
       "https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_3",
+    res_id: "/restaurants/sunset_grill",
   },
   {
     images: [
@@ -151,7 +157,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/744780/pexels-photo-744780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/1579739/pexels-photo-1579739.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_4",
+    res_id: "/restaurants/riverside_diner",
   },
   {
     images: [
@@ -162,7 +168,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/1267320/pexels-photo-1267320.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_5",
+    res_id: "/restaurants/bayview_café",
   },
   {
     images: [
@@ -173,7 +179,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/1307698/pexels-photo-1307698.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/541216/pexels-photo-541216.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_6",
+    res_id: "/restaurants/lakeside_eatery",
   },
   {
     images: [
@@ -184,7 +190,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/67468/pexels-photo-67468.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/15638789/pexels-photo-15638789.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=236.25&fit=crop&h=382.5",
     ],
-    res_id: "/restaurants/restaurant_7",
+    res_id: "/restaurants/central_park_café",
   },
   {
     images: [
@@ -195,7 +201,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_8",
+    res_id: "/restaurants/music_city_grill",
   },
   {
     images: [
@@ -206,7 +212,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/1819669/pexels-photo-1819669.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/1395967/pexels-photo-1395967.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_9",
+    res_id: "/restaurants/texas_bbq_house",
   },
   {
     images: [
@@ -217,7 +223,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/1581384/pexels-photo-1581384.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/2253643/pexels-photo-2253643.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_10",
+    res_id: "/restaurants/evergreen_eatery",
   },
   {
     images: [
@@ -228,7 +234,7 @@ const carouselImages = [
       "https://images.pexels.com/photos/1449773/pexels-photo-1449773.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/1581554/pexels-photo-1581554.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_11",
+    res_id: "/restaurants/lowcountry_diner",
   },
   {
     images: [
@@ -239,25 +245,36 @@ const carouselImages = [
       "https://images.pexels.com/photos/3656787/pexels-photo-3656787.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
       "https://images.pexels.com/photos/696218/pexels-photo-696218.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     ],
-    res_id: "/restaurants/restaurant_12",
+    res_id: "/restaurants/bourbon_street_grill",
+  },
+  {
+    images: [
+      "https://images.pexels.com/photos/1058277/pexels-photo-1058277.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+      "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+      "https://images.pexels.com/photos/262047/pexels-photo-262047.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+      "https://images.pexels.com/photos/784633/pexels-photo-784633.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+      "https://images.pexels.com/photos/744780/pexels-photo-744780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+      "https://images.pexels.com/photos/1579739/pexels-photo-1579739.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+    ],
+    res_id: "/restaurants/vegas_strip_café",
   },
 ];
 
 const slots = [
   {
-    ref_id: "/restaurants/restaurant_1",
+    ref_id: "/restaurants/sea_grill_of_merrick_park",
     slot: ["11:30", "13:30", "15:30", "17:30", "19:30", "21:30"],
   },
   {
-    ref_id: "/restaurants/restaurant_2",
+    ref_id: "/restaurants/ocean's_edge_bistro",
     slot: ["10:00", "12:00", "14:00", "16:00", "18:00", "20:00"],
   },
   {
-    ref_id: "/restaurants/restaurant_3",
+    ref_id: "/restaurants/sunset_grill",
     slot: ["11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
   },
   {
-    ref_id: "/restaurants/restaurant_4",
+    ref_id: "/restaurants/riverside_diner",
     slot: [
       "09:00",
       "11:00",
@@ -270,39 +287,39 @@ const slots = [
     ],
   },
   {
-    ref_id: "/restaurants/restaurant_5",
+    ref_id: "/restaurants/bayview_café",
     slot: ["10:30", "12:30", "14:30", "16:30", "18:30", "20:30"],
   },
   {
-    ref_id: "/restaurants/restaurant_6",
+    ref_id: "/restaurants/lakeside_eatery",
     slot: ["11:00", "13:00", "15:00", "17:00", "19:00", "21:00"],
   },
   {
-    ref_id: "/restaurants/restaurant_7",
+    ref_id: "/restaurants/central_park_café",
     slot: ["08:30", "10:30", "12:30", "14:30", "16:30", "18:30", "20:30"],
   },
   {
-    ref_id: "/restaurants/restaurant_8",
+    ref_id: "/restaurants/music_city_grill",
     slot: ["12:00", "14:00", "16:00", "18:00", "20:00", "22:00"],
   },
   {
-    ref_id: "/restaurants/restaurant_9",
+    ref_id: "/restaurants/texas_bbq_house",
     slot: ["10:00", "12:00", "14:00", "16:00", "18:00", "20:00"],
   },
   {
-    ref_id: "/restaurants/restaurant_10",
+    ref_id: "/restaurants/evergreen_eatery",
     slot: ["11:30", "13:30", "15:30", "17:30", "19:30", "21:30"],
   },
   {
-    ref_id: "/restaurants/restaurant_11",
+    ref_id: "/restaurants/lowcountry_diner",
     slot: ["09:30", "11:30", "13:30", "15:30", "17:30", "19:30"],
   },
   {
-    ref_id: "/restaurants/restaurant_12",
+    ref_id: "/restaurants/bourbon_street_grill",
     slot: ["11:00", "13:00", "15:00", "17:00", "19:00", "21:00", "23:00"],
   },
   {
-    ref_id: "/restaurants/restaurant_13",
+    ref_id: "/restaurants/vegas_strip_café",
     slot: ["12:00", "14:00", "16:00", "18:00", "20:00", "22:00"],
   },
 ];
