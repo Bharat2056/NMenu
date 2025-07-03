@@ -1,21 +1,17 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import {getFirestore} from "firebase/firestore";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { initializeApp, getApps } from "firebase/app";
+import { getFirestore, collection, doc, setDoc } from "firebase/firestore";
+import { restaurants, carouselImages, slots } from "../store/restaurants";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyCl4_KjcNC2dQcKecJwts360nDqQFJ8hWQ",
-  authDomain: "dine-time-yt-17139.firebaseapp.com",
-  projectId: "dine-time-yt-17139",
-  storageBucket: "dine-time-yt-17139.firebasestorage.app",
-  messagingSenderId: "323321920248",
-  appId: "1:323321920248:web:057bc1a2b34267cca9990d",
-  measurementId: "G-9BE9RZDL0P"
+  apiKey: "AIzaSy...",
+  authDomain: "dine-time-yt-64255.firebaseapp.com",
+  projectId: "dine-time-yt-64255",
+  storageBucket: "dine-time-yt-64255.appspot.com",
+  messagingSenderId: "759701114943",
+  appId: "1:759701114943:web:7ad5881c7d6a7db85cfb8e"
 };
 
-// Initialize Firebase
-export const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+// Safe initialization
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const db = getFirestore(app);

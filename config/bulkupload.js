@@ -1,40 +1,36 @@
-// import { collection, doc, setDoc } from "firebase/firestore";
-// import restaurants from "../store/restaurants"
-// import { db } from "./firebaseConfig";
-
-// const restaurantData =restaurants
-
-// const uploadData= async()=>{
-//     try {
-//         for(let i=0; i<restaurantData.length; i++){
-//             const restaurant= restaurantData[i];
-//             const docRef =doc(collection(db,"restaurants"),`restaurant_${i+1}`);
-//             await setDoc(docRef, restaurant);
-//         }
-//         console.log("Data uploaded")
-//     } catch (error) {
-//       console.log("Error uploading data",e);  
-//     }
-// }
-
-// export default uploadData;
-
-import { collection, doc, setDoc } from "firebase/firestore";
-import { slots } from "../store/restaurants";
-import { db } from "./firebaseConfig";
-
-const restaurantData = slots;
-
 const uploadData = async () => {
   try {
-    for (let i = 0; i < restaurantData.length; i++) {
-      const restaurant = restaurantData[i];
-      const docRef = doc(collection(db, "slots"), `slot_${i + 1}`);
+    console.log("Starting data upload...");
+
+    // Upload Restaurants
+    for (let i = 0; i < restaurants.length; i++) {
+      const restaurant = restaurants[i];
+      const docRef = doc(collection(db, "restaurants"), `restaurant_${i + 1}`);
       await setDoc(docRef, restaurant);
+      console.log(`✅ Uploaded restaurant_${i + 1}`);
     }
-    console.log("Data uploaded");
+
+    // Upload Carousel Images
+    console.log("Uploading carousel images...");
+    for (let i = 0; i < carouselImages.length; i++) {
+      const image = carouselImages[i];
+      const docRef = doc(collection(db, "carousel"), `carousel_${i + 1}`);
+      await setDoc(docRef, image);
+      console.log(`✅ Uploaded carousel_${i + 1}`);
+    }
+
+    // Upload Slots
+    console.log("Uploading slots...");
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      const docRef = doc(collection(db, "slots"), `slot_${i + 1}`);
+      await setDoc(docRef, slot);
+      console.log(`✅ Uploaded slot_${i + 1}`);
+    }
+
+    console.log("🎉 All data uploaded successfully.");
   } catch (e) {
-    console.log("Error uploading data", e);
+    console.error("❌ Error uploading data:", e);
   }
 };
 
