@@ -1,15 +1,19 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { slots } from '../store/restaurants';
+import { collection, doc, setDoc } from "firebase/firestore";
+import { carouselImages, restaurants, slots } from "../store/restaurants";
+import { db } from "./firebaseConfig";
 
 const restaurantData = slots;
 
 const uploadData = async () => {
   try {
-    // Save the entire slots array under a single key
-    await AsyncStorage.setItem('slots', JSON.stringify(restaurantData));
-    console.log('Data uploaded to local storage');
+    for (let i = 0; i < restaurantData.length; i++) {
+      const restaurant = restaurantData[i];
+      const docRef = doc(collection(db, "slots"), `slot_${i + 1}`);
+      await setDoc(docRef, restaurant);
+    }
+    console.log("Data uploaded");
   } catch (e) {
-    console.log('Error uploading data', e);
+    console.log("Error uploading data", e);
   }
 };
 
